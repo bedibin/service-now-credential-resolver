@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="Console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
+		</layout>
+	</appender>
+	<!--
+	<logger name="org.apache.http.headers">
+		<level value="INFO" />
+		<appender-ref ref="Console" />
+	</logger>
+	<logger name="org.apache.http.wire">
+		<level value="INFO" />
+		<appender-ref ref="Console" />
+	</logger>
+	<logger name="org.apache.http" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="Console" />
+	</logger>
+	-->
+	<logger name="com.snc.discovery" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="Console" />
+	</logger>
+	<root>
+		<priority value="WARN" />
+		<appender-ref ref="Console" />
+	</root>
+</log4j:configuration>
