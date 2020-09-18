@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-tss_url=${TSS_URL:-"https://tmg.secretservercloud.com"}
+tss_url=${TSS_URL:-"https://${TSS_TENANT}.secretservercloud.com"}
 tss_username=${TSS_USERNAME}
 tss_password=${TSS_PASSWORD}
 
