@@ -12,6 +12,7 @@
         <include>config*.xml</include>
         <include>Get-OAuth2AccessToken.ps1</include>
         <include>README.md</include>
+        <include>get-oauth2_access_token.sh</include>
         <include>pom.xml</include>
       </includes>
       <useDefaultExcludes>true</useDefaultExcludes>
