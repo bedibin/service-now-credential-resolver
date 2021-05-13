@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.thycotic.secrets.snc</groupId>
   <artifactId>tss-credential-resolver</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <properties>
     <!--
     This must point to an extraction of the MID Server zip file
@@ -82,27 +82,6 @@
       <systemPath>${midserver.agent.dir}/lib/log4j.jar</systemPath>
     </dependency>
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>1.1.6</version>
-      <scope>system</scope>
-      <systemPath>${midserver.agent.dir}/lib/jaxen.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-      <scope>system</scope>
-      <systemPath>${midserver.agent.dir}/lib/dom4j.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.7.1</version>
-      <scope>system</scope>
-      <systemPath>${midserver.agent.dir}/lib/xalan.jar</systemPath>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.3.1</version>
@@ -122,6 +101,20 @@
       <version>2.8.2</version>
       <scope>system</scope>
       <systemPath>${midserver.agent.dir}/lib/gson.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>mid</groupId>
+      <artifactId>mid</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${midserver.agent.dir}/lib/mid.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>commons-glide</groupId>
+      <artifactId>commons-glide</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${midserver.agent.dir}/lib/commons-glide.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

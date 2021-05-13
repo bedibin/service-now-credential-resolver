@@ -39,10 +39,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
+
+import com.service_now.mid.services.Config;
 
 /**
  * Thycotic Secret Server ServiceNow MID Server CredentialResolver
@@ -103,9 +101,6 @@ public class CredentialResolver {
      * {@code classpath}
      */
     public static final String FIELD_MAPPINGS_JSON_PATH = "tss-credential-resolver-field-mappings.json";
-
-    // for parsing parameters from the MID Server's {@code config.xml}
-    private static final SAXReader reader = new SAXReader();
 
     /**
      * Create an HTTP {@code Authorization} header using the given
@@ -227,17 +222,11 @@ public class CredentialResolver {
     /**
      * Parses a configuration parameter from config.xml using XPath
      *
-     * @param document      the config.xml {@link org.dom4j.Document}
      * @param parameterName the parameter name
      * @return the value of the specified parameter
      */
-    private static String parseParamFromConfigXml(Document document, String parameterName) {
-        String xpathTemplate = "/parameters/parameter[@name='%s']/@value";
-        Node node = document.selectSingleNode(String.format(xpathTemplate, parameterName));
-
-        if (node != null)
-            return node.getStringValue();
-        return null;
+    private static String parseParamFromConfigXml(String parameterName) {
+	return Config.get().getProperty(parameterName);
     }
 
     /**
@@ -293,51 +282,45 @@ public class CredentialResolver {
         }
 
         // Load the config.xml and check for all the necessary settings
-        try {
-            Document document = reader.read(configXml);
-           
-            this.oauth2GrantFilePath = parseParamFromConfigXml(document, "ext.tss.oauth2.grant_file");
-            // allow self-signed certificates when communicating with the server
-            this.allowSelfSignedCertificates = Boolean
-                    .parseBoolean(parseParamFromConfigXml(document, "ext.tss.allow.self_signed_certificates"));
+        this.oauth2GrantFilePath = parseParamFromConfigXml("ext.tss.oauth2.grant_file");
+        // allow self-signed certificates when communicating with the server
+        this.allowSelfSignedCertificates = Boolean
+                .parseBoolean(parseParamFromConfigXml("ext.tss.allow.self_signed_certificates"));
 
-            // if tss.url is defined then use it to craft the API and OAuth2
-            // token endpoints URLs, otherwise, initialize them from tss.api.url
-            // and tss.oauth2.url respectively.
-            String url = parseParamFromConfigXml(document, "ext.tss.url");
+        // if tss.url is defined then use it to craft the API and OAuth2
+        // token endpoints URLs, otherwise, initialize them from tss.api.url
+        // and tss.oauth2.url respectively.
+        String url = parseParamFromConfigXml("ext.tss.url");
 
-            if (url != null) {
-                // derive the API and OAuth2 URLs from a base URL with default paths
-                this.apiUrl = url.replaceAll("/+$", "") + DEFAULT_API_URL_PATH;
-                if (oauth2GrantFilePath == null) // no OAuth2 .grant_file so we need a URL
-                    this.oauth2Url = url.replaceAll("/+$", "") + DEFAULT_OAUTH2_URL_PATH;
-                log.debug("apiUrl = " + this.apiUrl + "; oauthUrl = " + this.oauth2Url);
-            } else {
-                // use arbitrary URLs for API and OAuth2
-                this.apiUrl = parseParamFromConfigXml(document, "ext.tss.api.url");
-                if (this.apiUrl != null) {
-                    this.apiUrl.replaceAll("/+$", "");
-                    log.debug("apiUrl = " + this.apiUrl);
-                }
-                this.oauth2Url = parseParamFromConfigXml(document, "ext.tss.oauth2.url");
-                if (this.oauth2Url != null) {
-                    this.oauth2Url.replaceAll("/+$", "");
-                    log.debug("oauth2Url = " + this.oauth2Url);
-                }
+        if (url != null) {
+            // derive the API and OAuth2 URLs from a base URL with default paths
+            this.apiUrl = url.replaceAll("/+$", "") + DEFAULT_API_URL_PATH;
+            if (oauth2GrantFilePath == null) // no OAuth2 .grant_file so we need a URL
+                this.oauth2Url = url.replaceAll("/+$", "") + DEFAULT_OAUTH2_URL_PATH;
+            log.debug("apiUrl = " + this.apiUrl + "; oauthUrl = " + this.oauth2Url);
+        } else {
+            // use arbitrary URLs for API and OAuth2
+            this.apiUrl = parseParamFromConfigXml("ext.tss.api.url");
+            if (this.apiUrl != null) {
+                this.apiUrl.replaceAll("/+$", "");
+                log.debug("apiUrl = " + this.apiUrl);
             }
+            this.oauth2Url = parseParamFromConfigXml("ext.tss.oauth2.url");
             if (this.oauth2Url != null) {
-                // if we have an OAuth2 URL then we need a username and password
-                this.username = parseParamFromConfigXml(document, "ext.tss.oauth2.username");
-                this.password = parseParamFromConfigXml(document, "ext.tss.oauth2.password");
-                if (this.username == null || this.password == null) {
-                    String message = "tss.oauth2.username and tss.oauth2.password are required but missing from "
-                            + configXmlPath;
-                    log.error(message);
-                    throw new RuntimeException(message);
-                }
+                this.oauth2Url.replaceAll("/+$", "");
+                log.debug("oauth2Url = " + this.oauth2Url);
             }
-        } catch (DocumentException e) {
-            log.error("unable to read " + configXmlPath, e);
+        }
+        if (this.oauth2Url != null) {
+            // if we have an OAuth2 URL then we need a username and password
+            this.username = parseParamFromConfigXml("ext.tss.oauth2.username");
+            this.password = parseParamFromConfigXml("ext.tss.oauth2.password");
+            if (this.username == null || this.password == null) {
+                String message = "tss.oauth2.username and tss.oauth2.password are required but missing from "
+                        + configXmlPath;
+                log.error(message);
+                throw new RuntimeException(message);
+            }
         }
 
         // load and parse the field-mappings JSON
@@ -515,6 +498,6 @@ public class CredentialResolver {
      * @return the version
      */
     public String getVersion() {
-        return "1.0";
+        return "1.1";
     }
 }
