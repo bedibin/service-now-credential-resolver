@@ -220,16 +220,6 @@ public class CredentialResolver {
     }
 
     /**
-     * Parses a configuration parameter from config.xml using XPath
-     *
-     * @param parameterName the parameter name
-     * @return the value of the specified parameter
-     */
-    private static String parseParamFromConfigXml(String parameterName) {
-	return Config.get().getProperty(parameterName);
-    }
-
-    /**
      * Creates an HTTP client that respects the
      * {@code ext.tss.allow.self_signed_certificates} configuration parameter
      *
@@ -255,42 +245,33 @@ public class CredentialResolver {
     private String apiUrl, oauth2GrantFilePath, oauth2Url, username, password;
 
     /**
-     * This constructor allows for the use of non-default {@code config.xml} and
-     * {@code tss-credential-resolver-field-mappings.json} files for unit testing.
+     * This constructor allows for the use of non-default
+     * {@code tss-credential-resolver-field-mappings.json} file for unit testing.
      * The no-argument constructor (see below) is what the ServiceNow runtime calls.
      *
-     * The constructor parses the {@code ext.tss.} parameters out of
-     * {@code config.xml} and loads the field-mappings
+     * The constructor retrieves the {@code ext.tss.} parameters from the
+     * {@code config.xml} via the MID Server Java Config class and loads the
+     * field-mappings
      *
      * The {@code tss-credential-resolver-field-mappings.json} file contains
      * mappings of Thycotic Secret Server secret template fields to ServiceNow
      * credential type fields. It is used to determine which fields from the secret
      * are copied to which fields in the resulting {@link java.util.Map}.
      *
-     * @param configXmlPath         the path to {@code config.xml}
      * @param fieldMappingsJsonPath the classpath-relative path to the field
      *                              mappings
      */
-    public CredentialResolver(String configXmlPath, String fieldMappingsJsonPath) {
-        File configXml = new File(configXmlPath);
-
-        if (!configXml.exists()) {
-            String message = configXmlPath + " does not exist";
-
-            log.error(message);
-            throw new RuntimeException(message);
-        }
-
+    public CredentialResolver(String fieldMappingsJsonPath) {
         // Load the config.xml and check for all the necessary settings
-        this.oauth2GrantFilePath = parseParamFromConfigXml("ext.tss.oauth2.grant_file");
+        this.oauth2GrantFilePath = Config.get().getProperty("ext.tss.oauth2.grant_file");
         // allow self-signed certificates when communicating with the server
         this.allowSelfSignedCertificates = Boolean
-                .parseBoolean(parseParamFromConfigXml("ext.tss.allow.self_signed_certificates"));
+                .parseBoolean(Config.get().getProperty("ext.tss.allow.self_signed_certificates"));
 
         // if tss.url is defined then use it to craft the API and OAuth2
         // token endpoints URLs, otherwise, initialize them from tss.api.url
         // and tss.oauth2.url respectively.
-        String url = parseParamFromConfigXml("ext.tss.url");
+        String url = Config.get().getProperty("ext.tss.url");
 
         if (url != null) {
             // derive the API and OAuth2 URLs from a base URL with default paths
@@ -300,12 +281,12 @@ public class CredentialResolver {
             log.debug("apiUrl = " + this.apiUrl + "; oauthUrl = " + this.oauth2Url);
         } else {
             // use arbitrary URLs for API and OAuth2
-            this.apiUrl = parseParamFromConfigXml("ext.tss.api.url");
+            this.apiUrl = Config.get().getProperty("ext.tss.api.url");
             if (this.apiUrl != null) {
                 this.apiUrl.replaceAll("/+$", "");
                 log.debug("apiUrl = " + this.apiUrl);
             }
-            this.oauth2Url = parseParamFromConfigXml("ext.tss.oauth2.url");
+            this.oauth2Url = Config.get().getProperty("ext.tss.oauth2.url");
             if (this.oauth2Url != null) {
                 this.oauth2Url.replaceAll("/+$", "");
                 log.debug("oauth2Url = " + this.oauth2Url);
@@ -313,11 +294,10 @@ public class CredentialResolver {
         }
         if (this.oauth2Url != null) {
             // if we have an OAuth2 URL then we need a username and password
-            this.username = parseParamFromConfigXml("ext.tss.oauth2.username");
-            this.password = parseParamFromConfigXml("ext.tss.oauth2.password");
+            this.username = Config.get().getProperty("ext.tss.oauth2.username");
+            this.password = Config.get().getProperty("ext.tss.oauth2.password");
             if (this.username == null || this.password == null) {
-                String message = "tss.oauth2.username and tss.oauth2.password are required but missing from "
-                        + configXmlPath;
+                String message = "tss.oauth2.username and tss.oauth2.password are required but missing from config.xml";
                 log.error(message);
                 throw new RuntimeException(message);
             }
@@ -350,11 +330,11 @@ public class CredentialResolver {
 
     /**
      * This constructor is called by the ServiceNow Runtime. It delegates to the
-     * {@code configXmlPath} constructor, supplying {@link #DEFAULT_CONFIG_XML_PATH}
-     * and {@link #FIELD_MAPPINGS_JSON_PATH} as the arguments.
+     * constructor, that takes a JSON Field Mappings file, supplying
+     * {@link #FIELD_MAPPINGS_JSON_PATH} as the argument.
      */
     public CredentialResolver() {
-        this(DEFAULT_CONFIG_XML_PATH, FIELD_MAPPINGS_JSON_PATH);
+        this(FIELD_MAPPINGS_JSON_PATH);
     }
 
     /**

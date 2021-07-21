@@ -64,14 +64,6 @@ public class CredentialResolverTest {
     }
 
     @Test
-    public void testCredentialResolverMissingConfig() {
-        thrown.expect(RuntimeException.class);
-        @SuppressWarnings("unused")
-        final CredentialResolver cr = new CredentialResolver("nonexistent/folder/config.xml",
-                CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
-    }
-
-    @Test
     public void testCredentialResolverWithGrantFile() {
         final CredentialResolver cr = new CredentialResolver("config-grant_file.xml",
                 CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
