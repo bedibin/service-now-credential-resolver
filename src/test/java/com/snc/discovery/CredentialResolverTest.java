@@ -65,8 +65,7 @@ public class CredentialResolverTest {
 
     @Test
     public void testCredentialResolverWithGrantFile() {
-        final CredentialResolver cr = new CredentialResolver("config-grant_file.xml",
-                CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
+        final CredentialResolver cr = new CredentialResolver(CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
         final Map<String, Object> args = new HashMap<String, Object>();
 
         args.put(CredentialResolver.ARG_ID, "2");
@@ -78,8 +77,7 @@ public class CredentialResolverTest {
 
     @Test
     public void testCredentialResolverWithTokenTxt() {
-        final CredentialResolver cr = new CredentialResolver("config-token_txt.xml",
-                CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
+        final CredentialResolver cr = new CredentialResolver(CredentialResolver.FIELD_MAPPINGS_JSON_PATH);
         final Map<String, Object> args = new HashMap<String, Object>();
 
         args.put(CredentialResolver.ARG_ID, "2");
