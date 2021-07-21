@@ -110,11 +110,32 @@
       <systemPath>${midserver.agent.dir}/lib/mid.jar</systemPath>
     </dependency>
     <dependency>
+      <groupId>commons-core-automation</groupId>
+      <artifactId>commons-core-automation</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${midserver.agent.dir}/lib/commons-core-automation.jar</systemPath>
+    </dependency>
+    <dependency>
       <groupId>commons-glide</groupId>
       <artifactId>commons-glide</artifactId>
       <version>1</version>
       <scope>system</scope>
       <systemPath>${midserver.agent.dir}/lib/commons-glide.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>snc-automation-api</groupId>
+      <artifactId>snc-automation-api</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${midserver.agent.dir}/lib/snc-automation-api.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>1</version>
+      <scope>system</scope>
+      <systemPath>${midserver.agent.dir}/lib/guava.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
